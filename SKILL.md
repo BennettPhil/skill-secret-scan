@@ -1,42 +1,58 @@
 ---
 name: secret-scan
-description: Scan codebases for accidentally committed secrets, API keys, tokens, and passwords using pattern matching.
+description: Searches codebases for accidentally committed secrets like API keys, tokens, and passwords
 version: 0.1.0
 license: Apache-2.0
 ---
 
 # secret-scan
 
-Scans a project directory for accidentally committed secrets like API keys, tokens, passwords, and private keys using configurable regex patterns.
-
-## Purpose
-
-Developers accidentally commit secrets to repositories all the time — AWS keys, database passwords, API tokens, private keys. This skill scans files for common secret patterns and reports matches with file location and severity.
+Scans source code for accidentally committed secrets: AWS keys, API tokens, private keys, passwords, and other sensitive data that should never be in version control.
 
 ## See It in Action
 
-```bash
-./scripts/run.sh /path/to/project
-```
+Start with [examples/basic-example.md](examples/basic-example.md) to scan a project.
+
+## Examples Index
+
+| File | Description |
+|------|-------------|
+| [basic-example.md](examples/basic-example.md) | Scan a project and see findings |
+| [common-patterns.md](examples/common-patterns.md) | CI integration, severity filters, exclusions |
+
+## Instructions
+
+When a user wants to check for leaked secrets in code:
+
+1. Run `./scripts/run.sh <path>` to scan a directory
+2. Review findings sorted by severity (CRITICAL, HIGH, MEDIUM, LOW)
+3. Use `--json` for machine-readable output in CI pipelines
+4. Use `--min-severity` to filter noise
 
 ## Reference
 
-| Flag | Default | Description |
-|------|---------|-------------|
-| DIR | (required) | Directory to scan |
-| --format | text | Output format: text, json |
-| --severity | all | Filter: all, high, medium, low |
-| --exclude | (none) | Glob patterns to exclude (comma-separated) |
-| --help | - | Show usage |
+| Flag | Description |
+|------|-------------|
+| `--min-severity <level>` | Minimum severity to report: critical, high, medium, low (default: low) |
+| `--exclude <dirs>` | Comma-separated directories to skip |
+| `--json` | Output as JSON array |
+| `--files-from <file>` | Read file list from file (use `-` for stdin) |
+| `--help` | Show usage |
 
-## Exit Codes
+## Detected Patterns
 
-| Code | Meaning |
-|------|---------|
-| 0 | No secrets found |
-| 1 | Secrets found |
-| 2 | Invalid input / usage error |
+- AWS Access Keys (AKIA...)
+- AWS Secret Keys
+- GitHub tokens (ghp_, gho_, ghs_)
+- Generic API keys (api_key, apikey patterns)
+- Private keys (RSA, DSA, EC, PGP)
+- JWT tokens
+- Slack tokens
+- Stripe keys (sk_live_, pk_live_)
+- Database connection strings with passwords
+- Generic password assignments
+- Base64-encoded secrets (high entropy strings)
 
 ## Installation
 
-No dependencies. Pure bash + grep implementation.
+No dependencies. Uses `grep` with regex patterns.

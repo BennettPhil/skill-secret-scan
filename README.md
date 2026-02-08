@@ -1,6 +1,6 @@
 # secret-scan
 
-Scan codebases for accidentally committed secrets, API keys, tokens, and passwords using pattern matching.
+Searches codebases for accidentally committed secrets like API keys, tokens, and passwords.
 
 ## Quick Start
 
@@ -8,35 +8,25 @@ Scan codebases for accidentally committed secrets, API keys, tokens, and passwor
 ./scripts/run.sh /path/to/project
 ```
 
-## Prerequisites
-
-- Bash 4+
-- grep with `-E` (extended regex) support
-
-## Usage
+## Filter by Severity
 
 ```bash
-# Scan a project
-./scripts/run.sh ./my-project
-
-# JSON output for CI integration
-./scripts/run.sh --format json ./my-project
-
-# Only high severity
-./scripts/run.sh --severity high ./my-project
-
-# Exclude test files
-./scripts/run.sh --exclude "*.test.*,*.spec.*" ./my-project
+./scripts/run.sh --min-severity high /path/to/project
 ```
 
-## Detected Patterns
+## JSON Output for CI
 
-- AWS Access Keys and Secret Keys
-- Private Keys (RSA, EC, DSA, OpenSSH)
-- GitHub Tokens (ghp_, ghs_)
-- Generic API keys and secrets
-- Database connection strings (Postgres, MySQL, MongoDB)
-- Password assignments
-- Bearer tokens
-- Slack tokens
-- Hardcoded IP:port combinations
+```bash
+./scripts/run.sh --json /path/to/project
+```
+
+## Pre-commit Hook
+
+```bash
+git diff --cached --name-only | xargs ./scripts/run.sh --files-from -
+```
+
+## Prerequisites
+
+- Bash, grep (standard Unix tools)
+- No external dependencies
